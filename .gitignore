@@ -1,0 +1,5 @@
+*.swp
+*~
+*.cpr
+*.bin
+.mypy_cache
