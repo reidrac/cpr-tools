@@ -10,5 +10,5 @@ Notes:
 - If less than 32 files are provided, zero length chunks wll be added to complete the CPR
 - Won't process more than 32 banks
 
-The tools require Python 3.
+The tools require Python 3, with no other dependency. Run them with `-h` for CLI help.
 
