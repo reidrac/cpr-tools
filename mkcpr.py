@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from os import path
 import struct
 
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 DEF_OUT = "out.cpr"
 
@@ -60,7 +60,8 @@ def main():
         for i, bank in enumerate(data):
             fd.write(b"cb%02d" % i)
             fd.write(struct.pack("<I", len(bank)))
-            fd.write(bank)
+            if bank:
+                fd.write(bank)
 
     print("Generated %s (%d chunks%s), %d bytes" % (
         args.output,
