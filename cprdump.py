@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from os import path
 import struct
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 def main():

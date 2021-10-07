@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from os import path
 import struct
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 DEF_OUT = "out.cpr"
 
@@ -23,6 +23,10 @@ def main():
                         help="sort input file alphabetically")
     parser.add_argument("-f", "--force", dest="force", action="store_true",
                         help="overwrite destination if already exists")
+    parser.add_argument("-r", "--raw", dest="raw", action="store_true",
+                        help="don't include header information")
+    parser.add_argument("-p", "--pad", dest="pad", action="store_true",
+                        help="pad chunks to 16K")
     parser.add_argument("files", help="files to include as chunks", nargs="+")
 
     args = parser.parse_args()
@@ -47,19 +51,28 @@ def main():
         for _ in range(32 - len(data)):
             data.append([])
 
+    if args.pad:
+        for i in range(32):
+            if len(data[i]) != 16 * 1024:
+                extended = list(data[i]) + \
+                    [0 for _ in range(16 * 1024 - len(data))]
+                data[i] = bytes(extended)
+
     if path.exists(args.output) and not args.force:
         parser.error("%s: file already exists" % args.output)
 
     # (block size + chunk header) x block + 4 ("AMS!")
     total_size = sum([len(block) + 8 for block in data]) + 4
     with open(args.output, "wb") as fd:
-        fd.write(b"RIFF")
-        fd.write(struct.pack("<I", total_size))
-        fd.write(b"AMS!")
+        if not args.raw:
+            fd.write(b"RIFF")
+            fd.write(struct.pack("<I", total_size))
+            fd.write(b"AMS!")
 
         for i, bank in enumerate(data):
-            fd.write(b"cb%02d" % i)
-            fd.write(struct.pack("<I", len(bank)))
+            if not args.raw:
+                fd.write(b"cb%02d" % i)
+                fd.write(struct.pack("<I", len(bank)))
             if bank:
                 fd.write(bank)
 
