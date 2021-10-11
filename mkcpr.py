@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from os import path
 import struct
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 DEF_OUT = "out.cpr"
 
@@ -55,7 +55,7 @@ def main():
         for i in range(32):
             if len(data[i]) != 16 * 1024:
                 extended = list(data[i]) + \
-                    [0 for _ in range(16 * 1024 - len(data))]
+                    [0 for _ in range(16 * 1024 - len(data[i]))]
                 data[i] = bytes(extended)
 
     if path.exists(args.output) and not args.force:
